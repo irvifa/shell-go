@@ -15,21 +15,14 @@ func (c *CdCommand) Execute(args []string) bool {
 	}
 
 	path := args[0]
-	var targetPath string
-
-	if path == "~" {
-		homeDir, err := os.UserHomeDir()
-		if err != nil {
-			fmt.Println("cd: could not determine home directory")
-			return true
-		}
-		targetPath = homeDir
-	} else {
-		targetPath, _ = filepath.Abs(path)
+	targetPath, err := filepath.Abs(path)
+	if err != nil {
+		fmt.Printf("cd: %s: %s\n", path, err.Error())
+		return true
 	}
 
 	if err := os.Chdir(targetPath); err != nil {
-		fmt.Printf("cd: %s: %s\n", path, err.Error())
+		fmt.Printf("cd: %s: No such file or directory\n", path)
 	}
 	return true
 }
