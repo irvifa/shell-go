@@ -15,10 +15,21 @@ func (c *CdCommand) Execute(args []string) bool {
 	}
 
 	path := args[0]
-	targetPath, err := filepath.Abs(path)
-	if err != nil {
-		fmt.Printf("cd: %s: %s\n", path, err.Error())
-		return true
+	var targetPath string
+	var err error
+
+	if path == "~" {
+		targetPath = os.Getenv("HOME")
+		if targetPath == "" {
+			fmt.Println("cd: HOME environment variable not set")
+			return true
+		}
+	} else {
+		targetPath, err = filepath.Abs(path)
+		if err != nil {
+			fmt.Printf("cd: %s: %s\n", path, err.Error())
+			return true
+		}
 	}
 
 	if err := os.Chdir(targetPath); err != nil {
